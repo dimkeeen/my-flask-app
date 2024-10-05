@@ -1,31 +1,47 @@
 pipeline {
-    agent any 
+    agent any
 
     stages {
         stage('Clone') {
             steps {
-                // Клонирование репозитория
-                git url: 'https://github.com/dimkeeen/my-flask-app.git'
+                // Клонируем репозиторий
+                git url: 'https://github.com/dimkeeen/my-flask-app.git', branch: 'master'
             }
         }
-        stage('Build') {
+
+        stage('Install Dependencies') {
             steps {
-                // Сборка проекта (например, установка зависимостей)
-                sh 'pip install -r requirements.txt'
+                sh '''
+                python3 -m venv venv
+                . venv/bin/activate
+                pip install -r requirements.txt
+                '''
             }
         }
-        stage('Test') {
+
+        stage('Run Tests') {
             steps {
-                // Запуск тестов
-                sh 'pytest'
+                sh '''
+                . venv/bin/activate
+                python -m unittest discover
+                '''
             }
         }
-        stage('Deploy') {
+
+        stage('Run Application') {
             steps {
-                // Развертывание приложения
-                sh 'docker build -t my-flask-app .'
-                sh 'docker run -d -p 5000:5000 my-flask-app'
+                sh '''
+                . venv/bin/activate
+                flask run
+                '''
             }
+        }
+    }
+
+    post {
+        always {
+            // Cleanup
+            sh 'rm -rf venv'
         }
     }
 }

@@ -5,7 +5,7 @@ pipeline {
         stage('Clone') {
             steps {
                 // Клонируем репозиторий
-                git url: 'https://github.com/dimkeeen/my-flask-app.git', branch: 'master'
+                git url: 'https://github.com/dimkeeen/my-flask-app.git', branch: 'main'
             }
         }
 
